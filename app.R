@@ -16,7 +16,6 @@ library(mapdata)
 library(ggthemes)
 library(viridisLite)
 
-#Data Frames
 City = c("Vancouver","Portland","San Francisco","Seattle","Los Angeles",
          "San Diego","Las Vegas","Phoenix","Albuquerque","Denver",
          "San Antonio","Dallas","Houston","Kansas City","Minneapolis","Saint Louis",
@@ -48,12 +47,12 @@ ui <- fluidPage(
                       # Sidebar with a slider input for number of bins 
                       sidebarLayout(
                         sidebarPanel(
-                          selectInput(inputId = "Country1",
-                                      label = "Choose your Country",
-                                      choices = sort(unique(Country))),
                           selectInput(inputId = "City1",
                                       label = "Choose your City",
                                       choices = sort(unique(City))),
+                          # value is always yyyy-mm-dd, even if the display format is different
+                          dateInput("date3", "Date:", value = "2012-02-29", format = "mm/dd/yy"),
+                          
                           sliderInput(inputId = "Hours1",
                                       label = "Hourly Forecast",
                                       min = 1,max = 24, value = 1
@@ -67,18 +66,18 @@ ui <- fluidPage(
                       )
              ),
              
+             
              tabPanel(title="7 Day Forecast",icon=icon("fas fa-chart-line"),
                       titlePanel("Forecast"),
                       
                       # Sidebar with a slider input for number of bins 
                       sidebarLayout(
                         sidebarPanel(
-                          selectInput(inputId = "Country2",
-                                      label = "Choose your Country",
-                                      choices = sort(unique(Country))),
                           selectInput(inputId = "City2",
                                       label = "Choose your City",
                                       choices = sort(unique(City))),
+                          # value is always yyyy-mm-dd, even if the display format is different
+                          dateInput("date3", "Date:", value = "2012-02-29", format = "mm/dd/yy"),
                           sliderInput(inputId = "7_Day",
                                       label = "7 Day Forecast",
                                       min = 1,max = 7, value = 1
@@ -91,19 +90,19 @@ ui <- fluidPage(
                         )
                       )
              ),
-                      
+             
+             
              tabPanel(title="Yearly Forecast",icon=icon("fas fa-chart-line"),
                       titlePanel("Forecast"),
    
                 # Sidebar with a slider input for number of bins 
                     sidebarLayout(
                     sidebarPanel(
-              selectInput(inputId = "Country3",
-                          label = "Choose your Country",
-                          choices = sort(unique(Country))),
               selectInput(inputId = "City3",
                           label = "Choose your City",
                           choices = sort(unique(City))),
+              # value is always yyyy-mm-dd, even if the display format is different
+              dateInput("date3", "Date:", value = "2012-02-29", format = "mm/dd/yy"),
               sliderInput(inputId = "Year3",
                           label = "Yearly Forecast",
                           min = 1,max = 5, value = 1
@@ -123,9 +122,9 @@ tabPanel(title="Maps",icon=icon("far fa-globe"),
          sidebarPanel(
            
            # Input: Selector for choosing dataset ----
-           selectInput(inputId = "City4",
-                       label = "Choose your City",
-                       choices = sort(unique(City)))
+           selectInput(inputId = "Country4",
+                       label = "Choose your Country",
+                       choices = sort(unique(Country)))
          ),
          
           mainPanel
@@ -138,9 +137,6 @@ tabPanel(title="Maps",icon=icon("far fa-globe"),
          sidebarPanel(
            
            # Input: Selector for choosing dataset ----
-           selectInput(inputId = "Country5",
-                       label = "Choose your Country",
-                       choices = sort(unique(Country))),
            selectInput(inputId = "City5",
                        label = "Choose your City",
                        choices = sort(unique(City))),
