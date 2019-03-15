@@ -124,7 +124,7 @@ library(colorspace)
 require("colorspace")
 
 
-install.packages("plotly")
+#install.packages("plotly")
 library(plotly)
 require("plotly")
 
@@ -187,14 +187,28 @@ hour
 date <- paste(month,day,year,sep = "/")
 date
 
+
+X <- cbind(date,hour,X)
+head(X)
+
 #, format = "mm/dd/yy")
 
 head(X)
 
 measure <- colnames(X)
 
+colnames(forecast)
+
+measure
+
+colnames(X)
+
+lista <- c("Temperature","Pressure","Humidity","Wind")
 
 
+
+
+is.data.frame(lista)
 
 # Define UI for application that draws a histogram
 
@@ -208,12 +222,13 @@ ui <- fluidPage(
                       # Sidebar with a slider input for number of bins 
                       sidebarLayout(
                         sidebarPanel(
-                          selectInput(inputId = measure,
-                                      label = "Choose your measure",
-                                      choices = sort(unique(measure))),
-                          selectInput(inputId = City,
+                          selectInput(inputId = "City1",
                                       label = "Choose your City",
                                       choices = sort(unique(City))),
+                          
+                          selectInput(inputId = "lista",
+                                      label = "Choose your measure",
+                                      choices = sort(unique(lista))),
                           # value is always yyyy-mm-dd, even if the display format is different
                           dateInput("date", "Date:", value = date, format = "mm/dd/yy"),
                           sliderInput(inputId = "hour",
@@ -223,7 +238,7 @@ ui <- fluidPage(
                         ),
                         # Show a plot of the generated distribution
                         mainPanel(
-                          plotlyOutput("temp")
+                          plotlyOutput("Output1")
                         
                         )
                       )
@@ -235,19 +250,25 @@ is.data.frame(X$temp)
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$temp <- renderPlotly({ggplot(data = X, aes(x = datetime, y = City))+
-      geom_line(color = "#00AFBB", size = 0.5) + ggtitle('temperature')+
-      xlab('Date') + ylab('Temperature in Celsius')
+  output$Output1 <- renderPlotly(
+    
+    {
+      if(lista=="Temperature")
+      {
+        ggplot(data = forecast$temp, aes(x = datetime, y = City))+
+          geom_line(color = "#00AFBB", size = 0.5) + ggtitle('temperature')+
+          xlab('Date') + ylab('Temperature in Celsius')
+      }
     
     
     
   })
 }
 
-#ggplot(data = X$temp, aes(x = datetime, y = City))+
- # geom_line(color = "#00AFBB", size = 0.5) + ggtitle('temperature')+
-  #xlab('Date') + ylab('Temperature in Celsius')
-
+#output$temp <- renderPlotly({ggplot(data = temp, aes(x = datetime, y = City))+
+ #   geom_line(color = "#00AFBB", size = 0.5) + ggtitle('temperature')+
+  #  xlab('Date') + ylab('Temperature in Celsius')
+  
 
 
 # Run the application 
