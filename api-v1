@@ -1,0 +1,184 @@
+
+
+##################################################################################################################
+#install.packages("ggthemes")
+library(ggthemes)
+require("ggthemes")
+
+#install.packages("viridisLite")
+library(viridisLite)
+require("viridisLite")
+
+#install.packages("shiny")
+library(shiny)
+require("shiny")
+
+#install.packages("shinythemes")
+library(shinythemes)
+require("shinythemes")
+
+
+#library(shinydashboard)
+#library(markdown)
+#library(plotly)
+#library(tidyverse)
+#library(WDI)
+#library(wbstats)
+#library(progress)
+#library(Hmisc)
+#library(maps)
+#library(viridis)
+#library(mapproj)
+#library(mapdata)
+
+
+city_attributes <- read.csv("city_attributes.csv",sep = ",",header=TRUE,stringsAsFactors=FALSE) 
+
+#city_attributes
+
+rownames(city_attributes)
+colnames(city_attributes)
+city_attributes[,1]
+
+head(city_attributes)
+
+humidity <- read.csv("humidity.csv",sep = ",",header=TRUE,stringsAsFactors=FALSE) 
+
+#humidity
+
+rownames(humidity)
+colnames(humidity)
+head(humidity)
+dim(humidity)
+
+colnames(city_attributes)
+head(city_attributes)
+
+
+humidity
+
+X <- humidity
+
+X$datetime
+
+day <- substr(X$datetime,1,2)
+day
+
+month <- substr(X$datetime,4,5)
+month
+
+year <- substr(X$datetime,7,10)
+year
+
+hour <- substr(X$datetime,12,13)
+hour
+
+# value is always yyyy-mm-dd, even if the display format is different
+date <- paste(month,day,year,sep = "/")
+date
+
+#, format = "mm/dd/yy")
+
+
+head(X)
+X1 <- cbind(X,hour,date,month,year)
+head(X1)
+
+head(city_attributes)
+
+#attach(city_attributes)
+colnames(city_attributes)
+City
+Country
+
+#city_attributes <- read.csv("city_attributes.csv",sep = ",",header=TRUE,stringsAsFactors=FALSE) 
+colnames(city_attributes)
+Country
+
+city_attributes[city_attributes$Country=="United States",]
+city_attributes[city_attributes$Country=="Canada",]
+city_attributes[city_attributes$Country=="Israel",]
+
+city_attributes[city_attributes$Country=="United States","City"]
+city_attributes[city_attributes$Country=="Canada","City"]
+city_attributes[city_attributes$Country=="Israel","City"]
+
+city_attributes[,"City"]
+
+City
+
+head(humidity)
+#attach(humidity)
+colnames(humidity)
+Vancouver
+
+#Data Frames
+City = c("Vancouver","Portland","San Francisco","Seattle","Los Angeles",
+         "San Diego","Las Vegas","Phoenix","Albuquerque","Denver",
+         "San Antonio","Dallas","Houston","Kansas City","Minneapolis","Saint Louis",
+         "Chicago","Nashville","Indianapolis","Atlanta","Detroit",
+         "Jacksonville","Charlotte","Miami","Pittsburgh","Toronto",
+         "Philadelphia","New York","Montreal","Boston","Beersheba","Tel Aviv District",
+         "Eilat","Haifa","Nahariyya","Jerusalem")
+Country<-c("USA","Canada","Israel")
+USA <-c("Portland","San Francisco","Seattle","Los Angeles",
+        "San Diego","Las Vegas","Phoenix","Albuquerque","Denver",
+        "San Antonio","Dallas","Houston","Kansas City","Minneapolis","Saint Louis",
+        "Chicago","Nashville","Indianapolis","Atlanta","Detroit",
+        "Jacksonville","Charlotte","Miami","Pittsburgh",
+        "Philadelphia","New York","Montreal","Boston")
+Canada<-c("Vancouver","Toronto","Montreal")
+Israel<-c("Beersheba","Tel Aviv District",
+          "Eilat","Haifa","Nahariyya","Jerusalem")
+# Define UI for application that draws a histogram
+
+ui <- fluidPage(
+  theme = shinytheme("slate"),
+  # Application title
+  navbarPage(title="Weather Forecasting",
+             tabPanel(title="Hourly Forecast",icon=icon("fas fa-chart-line"),
+                      titlePanel("Forecast"),
+                      
+                      # Sidebar with a slider input for number of bins 
+                      sidebarLayout(
+                        sidebarPanel(
+                          
+                          selectInput(inputId = City,
+                                      label = "Choose your City",
+                                      choices = sort(unique(City))),
+                          # value is always yyyy-mm-dd, even if the display format is different
+                          dateInput("date", "Date:", value = date, format = "mm/dd/yy"),
+                          sliderInput(inputId = "hour",
+                                      label = "Hourly Forecast",
+                                      min = 1,max = 24, value = hour
+                          )
+                        ),
+                        # Show a plot of the generated distribution
+                        mainPanel(
+                          plotOutput("humidity")
+                          
+                        )
+                      )
+             )
+             
+  ))
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+  
+  output$distPlot <- renderPlot({
+    
+    
+  })
+}
+
+
+
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+                      
+                      
+                      
+                      
+  
+  
