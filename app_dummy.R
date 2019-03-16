@@ -1,5 +1,6 @@
 rm(list = ls())
 
+library(ggplot2)
 library(RCurl)
 library(httr)
 library(rjson)
@@ -22,15 +23,16 @@ library(ggthemes)
 library(viridisLite)
 
 #add city names here
-City = c("Vancouver","Portland","San Francisco","Seattle","Los Angeles",
-         "San Diego","Las Vegas","Phoenix","Albuquerque","Denver",
-         "San Antonio","Dallas","Houston","Kansas City","Minneapolis","Saint Louis",
-         "Chicago","Nashville","Indianapolis","Atlanta","Detroit",
-         "Jacksonville","Charlotte","Miami","Pittsburgh","Toronto",
-         "Philadelphia","New York","Montreal","Boston","Beersheba","Tel Aviv District",
-         "Eilat","Haifa","Nahariyya","Jerusalem","London","Madrid","Barcelona","Valencia","Mumbai",
-         "Granada","Salamanca","Singapore","Hong Kong","New York","Dubai","Rome","Las Vegas","Milan","Warsaw"
-)
+#City = c("Vancouver","Portland","San Francisco","Seattle","Los Angeles",
+#         "San Diego","Las Vegas","Phoenix","Albuquerque","Denver",
+#         "San Antonio","Dallas","Houston","Kansas City","Minneapolis","Saint Louis",
+#         "Chicago","Nashville","Indianapolis","Atlanta","Detroit",
+#         "Jacksonville","Charlotte","Miami","Pittsburgh","Toronto",
+#         "Philadelphia","New York","Montreal","Boston","Beersheba","Tel Aviv District",
+#         "Eilat","Haifa","Nahariyya","Jerusalem","London","Madrid","Barcelona","Valencia","Mumbai",
+#         "Granada","Salamanca","Singapore","Hong Kong","New York","Dubai","Rome","Las Vegas","Milan","Warsaw"
+#)
+City = c("London")
 
 #DO NOT CHANGE THIS
 api_key = "79b54045049e992fe3ae23152608b590"
@@ -103,8 +105,10 @@ dat_temperature<-forecast$temp
 dat_humidity<-forecast$humidity
 dat_pressure<-forecast$pressure
 dat_speed<-forecast$speed
+dat_date<-forecast$date_time
 
 Measure = c("temperature","humidity","pressure","speed")
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -114,28 +118,21 @@ ui <- fluidPage(
              tabPanel(title="Hourly Forecast",icon=icon("fas fa-chart-line"),
                       titlePanel("Forecast"),
                       
-                      # Sidebar with a slider input for number of bins 
+                      # Sidebar with a input 
                       sidebarLayout(
                         sidebarPanel(
-                         # selectInput(inputId = "City1",
-                          #            label = "Choose your City",
-                          #            choices = sort(unique(City))),
-                          
-                          
-                          #sliderInput(inputId = "Day",
-                          #            label = "Days",
-                          #            min = 1,max = 5, value = 1
+                          selectInput(inputId = "City1",
+                                      label = "Choose your City",
+                                      choices = sort(unique(City))),
                            selectInput(inputId = "measure",
                                       label = "Choose your Measure",
                                       choices = sort(unique(Measure)))
                           
-                          )
-                        ),
+                          ),
                         # Show a plot of the generated distribution
-                        mainPanel(
-                          plotOutput("Hour_FC")
-                          
+                        mainPanel(plotOutput(outputId ="Hour"))
                         )
+                        
                       )
              )
   )
@@ -144,46 +141,46 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$Hour_FC <- renderPlot({
+  output$Hour <- renderPlot({
     
     #This is the variable selection
+    City1 =input$City1
     measure = input$measure
     
-    if(measure==temperature){
-      dat_temperature <- ts(dat_temperature, start = c(2019, 1), freq = 5)
-    ldat_temperature<-log(dat_temperature)
-    dldat_temperature<-diff(ldat_temperature)
+    if(input$measure=="temperature"){
+      #dat_temperature <- ts(dat_temperature, start = c(2019, 1), freq = 5)
+      
+      #Plotting the time series
+      
+      #plot(dat_temperature, main = 'Temperature',type="l")}
+      
+      ggplot(dat_temperature, aes(x = dat_date, y = City1))+
+        geom_line(color = "#00AFBB", size = 0.5) + ggtitle('temperature ')+
+        xlab('Date') + ylab('Temperature in Kelvins')}
     
-    #Plotting the time series
-    
-    ggplot(dldat_temperature, aes(Year, input$measure)) + geom_line() + geom_point()}
-    
-    else if(measure==humidity){
+    else if(input$measure=="humidity"){
       dat_humidity <- ts(dat_humidity, start = c(2019, 1), freq = 5)
-      ldat_humidity<-log(dat_humidity)
-      dldat_humidity<-diff(ldat_humidity)
       
       #Plotting the time series
       
-      plot(dldat_humidity, main = 'Humidity')}
+      plot(dat_humidity, main = 'Humidity',type="l")}
     
-    else if(measure==pressure){
+    else if(input$measure=="pressure"){
       dat_pressure <- ts(dat_pressure, start = c(2019, 1), freq = 5)
-      ldat_pressure<-log(dat_pressure)
-      dldat_pressure<-diff(ldat_pressure)
+      
       
       #Plotting the time series
       
-      plot(dldat_pressure, main = 'pressure')}
+      plot(dat_pressure, main = 'pressure',type="l")}
     
-    else if(measure==speed){
+    else if(input$measure=="speed"){
       dat_speed <- ts(dat_speed, start = c(2019, 1), freq = 5)
-      ldat_speed<-log(dat_speed)
-      dldat_speed<-diff(ldat_speed)
       
       #Plotting the time series
       
-      plot(dldat_speed, main = 'speed')}
+      plot(dat_speed, main = 'speed',type="l")}
+    
+   
     
     })
 }
