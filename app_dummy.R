@@ -36,6 +36,41 @@ cities = c("London","Madrid","Barcelona","Valencia","Mumbai","Granada","Salamanc
 City = cities
 Measure = c("temperature","humidity","pressure","speed")
 
+#colnames(forecast)
+
+#date_time
+#temp
+#temp_min
+#temp_max
+#pressure
+#sea_level
+#grnd_level
+#humidity
+#temp_kf
+#id
+#main
+#description
+#icon
+#speed
+#deg
+#City
+
+
+
+#head(forecast)
+#forecast1 <- cbind(forecast,date,year,month,day,hour)
+#head(forecast1)
+
+# value is always yyyy-mm-dd, even if the display format is different
+#date <- paste(month,day,year,sep = "/")
+#date
+
+#, format = "mm/dd/yy")
+
+
+
+
+
 #DO NOT CHANGE THIS
 api_key = "79b54045049e992fe3ae23152608b590"
 get_weather_current=function(api_key,city="",country="")
@@ -91,6 +126,7 @@ get_weather_forecast=function(api_key,city="",country="")
 #extract live forecast for next 5 days 
 forecast = data.frame()
 
+
 for(j in 1:length(cities)){
   
   bin = data.frame()
@@ -101,6 +137,7 @@ for(j in 1:length(cities)){
   
   
   data=get_weather_forecast(api_key,city=cities[j])
+  
   
   for (i in 1:40) {
     bin = as.data.frame(data$list[[i]]$main)
@@ -123,7 +160,11 @@ for(j in 1:length(cities)){
   
   
 }
+
 colnames(forecast)[1] = c("date_time")
+forecast$num_forecast = forecast$date_time
+levels(forecast$num_forecast) <- 1:40  
+forecast$num_forecast = as.numeric(forecast$num_forecast)
 rm(bin,data,date_time,main,temp,weather,wind)
 
 
@@ -163,6 +204,24 @@ current$date_time = as.POSIXct(current$date_time, origin="1970-01-01")
 colnames(current)[13] = c("Visibility")
 rm(bin,data,date_time,main,temp,weather,wind,visibility,clouds,cordinates)
 
+#day <- substr(forecast$date_time,9,10)
+#day
+
+#month <- substr(forecast$date_time,6,7)
+#month
+
+#year <- substr(forecast$date_time,1,4)
+#year
+
+#hour <- substr(forecast$date_time,12,13)
+#hour
+
+#date <- substr(forecast$date_time,1,10)
+#date
+
+forecast <- cbind(forecast,date,year,month,day,hour)
+
+head(forecast)
 
 
 
@@ -182,7 +241,12 @@ ui <- fluidPage(
                                       choices = sort(unique(City))),
                           selectInput(inputId = "measure",
                                       label = "Choose your Measure",
-                                      choices = sort(unique(Measure)))
+                                      choices = sort(unique(Measure))),
+                          sliderInput(inputId = "hour",
+                                      label = "Number of forecasts",
+                                      min = 01,max = 40, value = c(20,30))
+                          # value is always yyyy-mm-dd, even if the display format is different
+                          #dateInput("date", "Date:", value = date, format = "yyyy-mm-dd")
                           
                         ),
                         # Show a plot of the generated distribution
@@ -194,7 +258,7 @@ ui <- fluidPage(
                       #titlePanel("View Map"),
                       
                       mainPanel(leafletOutput(outputId = "mymap"), 
-                                absolutePanel(top = 60, left = 20 
+                                absolutePanel(top = 60, left = 20
                                               #checkboxInput("markers", "Weather", FALSE)
                                 )
                       )
@@ -203,7 +267,8 @@ ui <- fluidPage(
 )
 
 
-# Define server logic required to draw a histogram
+
+# Define server logic required to draw a histogram+
 server <- function(input, output) {
   
   
@@ -213,31 +278,51 @@ server <- function(input, output) {
     #This is the variable selection
     City1 =input$City1
     measure = input$measure
+    hour = input$hour
+    #date = input$date
+    
     
     if(input$measure=="temperature"){
-      plot(forecast$temp[forecast$City==input$City1],main='Temperature',type="l")
-    }
-    
-    #Plotting the time series
-    #plot(dat_temperature, main = 'Temperature',type="l")}
-    #ggplot(dat_temperature, aes(x = dat_date, y = City))+
-    # geom_line(color = "#00AFBB", size = 0.5) + ggtitle('Temperature')+
-    #xlab('Date') + ylab('Temperature in Kelvins')}
+      #Plotting temperature   
+      ggplot(as.data.frame(forecast$temp[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]]), aes(x=forecast$date_time[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], y=forecast$temp[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], group=1)) +
+            geom_line(color="red")+
+            geom_point()+
+            labs(title="Temperature Forecast (every 3 hours) - (in Kelvin)",x="Date & Time", y = "Temperature (in Kelvin)")+
+            theme(axis.text.x = element_text(angle = 90))+theme(plot.title = element_text(hjust = 0.5))
+      
+        }
     
     else if(input$measure=="humidity"){
-      #Plotting the time series
-      plot(forecast$humidity[forecast$City==City1],main='Humidity',type="l")
-    }
+      #Plotting Humidity   
+      ggplot(as.data.frame(forecast$humidity[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]]), aes(x=forecast$date_time[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], y=forecast$humidity[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], group=1)) +
+        geom_line(color="red")+
+        geom_point()+
+        labs(title="Humidity Forecast (every 3 hours)",x="Date & Time", y = "Humidity")+
+        theme(axis.text.x = element_text(angle = 90))+theme(plot.title = element_text(hjust = 0.5))
+      
+      }
     
     else if(input$measure=="pressure"){
-      #Plotting the time series
-      plot(forecast$pressure[forecast$City==City1],main='Pressure',type="l")
-    }
+      ggplot(as.data.frame(forecast$pressure[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]]), aes(x=forecast$date_time[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], y=forecast$pressure[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], group=1)) +
+        geom_line(color="red")+
+        geom_point()+
+        labs(title="Pressure Forecast (every 3 hours)",x="Date & Time", y = "Pressure")+
+        theme(axis.text.x = element_text(angle = 90))+theme(plot.title = element_text(hjust = 0.5))
+      
+      
+      }
     
     else if(input$measure=="speed"){
-      #Plotting the time series
-      plot(forecast$speed[forecast$City==City1],main='Speed',type="l")
-    }
+      
+      ggplot(as.data.frame(forecast$speed[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]]), aes(x=forecast$date_time[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], y=forecast$speed[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], group=1)) +
+        geom_line(color="red")+
+        geom_point()+
+        labs(title="Wind Speed Forecast(every 3 hours) - (in m/sec)",x="Date & Time", y = "Wind speed (im m/sec)")+
+        theme(axis.text.x = element_text(angle = 90))+theme(plot.title = element_text(hjust = 0.5))
+   
+      
+         
+         }
   })
   
   output$mymap <-renderLeaflet({
