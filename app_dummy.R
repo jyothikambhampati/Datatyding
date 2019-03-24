@@ -16,62 +16,13 @@ library(leaflet.extras)
 library(dplyr)
 
 
-
-
 #add city names here
-#City = c("Vancouver","Portland","San Francisco","Seattle","Los Angeles",
-#         "San Diego","Las Vegas","Phoenix","Albuquerque","Denver",
-#         "San Antonio","Dallas","Houston","Kansas City","Minneapolis","Saint Louis",
-#         "Chicago","Nashville","Indianapolis","Atlanta","Detroit",
-#         "Jacksonville","Charlotte","Miami","Pittsburgh","Toronto",
-#         "Philadelphia","New York","Montreal","Boston","Beersheba","Tel Aviv District",
-#         "Eilat","Haifa","Nahariyya","Jerusalem","London","Madrid","Barcelona","Valencia","Mumbai",
-#         "Granada","Salamanca","Singapore","Hong Kong","New York","Dubai","Rome","Las Vegas","Milan","Warsaw"
-#)
-#City = c("London")
-#add city names here
-cities = c("London","Madrid","Barcelona","Valencia","Mumbai","Granada","Salamanca","Singapore","Hong Kong","New York","Dubai","Rome","Las Vegas","Milan","Warsaw","Toronto")
-#cities = c("Madrid")
-
+cities = c("Sevilla","Bilbao","Amsterdam","London","Lisbon","Paris","Barcelona","Madrid","Valencia","Mumbai","Salamanca","Singapore","Hong Kong","New York","Dubai","Rome","Las Vegas","Milan","Warsaw","Toronto","Miami","Buenos Aires","Rio de Janeiro","Santiago","Quito","Nairobi","Cairo","Istanbul","Berlin","Munich","Moscow","Tokyo","Delhi","Vijayawada","Chennai","Shanghai","Melbourne","Sydney","Cairo","Vienna","Zurich","Budapest","Brussels")
 City = cities
-Measure = c("temperature","humidity","pressure","speed")
-
-#colnames(forecast)
-
-#date_time
-#temp
-#temp_min
-#temp_max
-#pressure
-#sea_level
-#grnd_level
-#humidity
-#temp_kf
-#id
-#main
-#description
-#icon
-#speed
-#deg
-#City
+Measure = c("humidity","temperature","pressure","speed")
 
 
-
-#head(forecast)
-#forecast1 <- cbind(forecast,date,year,month,day,hour)
-#head(forecast1)
-
-# value is always yyyy-mm-dd, even if the display format is different
-#date <- paste(month,day,year,sep = "/")
-#date
-
-#, format = "mm/dd/yy")
-
-
-
-
-
-#DO NOT CHANGE THIS
+#API KEY : openweathermap.org - DO NOT CHANGE THIS
 api_key = "79b54045049e992fe3ae23152608b590"
 get_weather_current=function(api_key,city="",country="")
 {
@@ -126,7 +77,6 @@ get_weather_forecast=function(api_key,city="",country="")
 #extract live forecast for next 5 days 
 forecast = data.frame()
 
-
 for(j in 1:length(cities)){
   
   bin = data.frame()
@@ -165,6 +115,14 @@ colnames(forecast)[1] = c("date_time")
 forecast$num_forecast = forecast$date_time
 levels(forecast$num_forecast) <- 1:40  
 forecast$num_forecast = as.numeric(forecast$num_forecast)
+forecast$num_forecast[forecast$num_forecast<=8] = 1
+forecast$num_forecast[forecast$num_forecast>8 & forecast$num_forecast<=16] = 2
+forecast$num_forecast[forecast$num_forecast>16 & forecast$num_forecast<=24] = 3
+forecast$num_forecast[forecast$num_forecast>24 & forecast$num_forecast<=32] = 4
+forecast$num_forecast[forecast$num_forecast>32 & forecast$num_forecast<=40] = 5
+forecast$temp = round(forecast$temp - 273.15)
+forecast$temp_min = round(forecast$temp_min - 273.15)
+forecast$temp_max = round(forecast$temp_max - 273.15)
 rm(bin,data,date_time,main,temp,weather,wind)
 
 
@@ -179,7 +137,7 @@ wind = data.frame()
 visibility = data.frame()
 clouds = data.frame()
 cordinates = data.frame()
-
+sunrise_set = data.frame()
 
 
 for(j in 1:length(cities)){
@@ -193,36 +151,27 @@ for(j in 1:length(cities)){
   wind = wind[,c("speed")]
   visibility = as.data.frame(data$visibility)
   clouds = as.data.frame(data$clouds)
+  sunrise_set = as.data.frame(data$sys)
+  sunrise_set = sunrise_set[,c("sunrise","sunset")]
+  
   temp = data.frame()
-  temp = cbind(date_time,cordinates,main,weather,wind,visibility,clouds)
+  temp = cbind(date_time,cordinates,main,weather,wind,visibility,clouds,sunrise_set)
   temp$City = data$name
   current = rbind(current,temp) 
   
 }
 colnames(current)[1] = c("date_time")
 current$date_time = as.POSIXct(current$date_time, origin="1970-01-01")
-colnames(current)[13] = c("Visibility")
-rm(bin,data,date_time,main,temp,weather,wind,visibility,clouds,cordinates)
+current$sunrise = as.POSIXct(current$sunrise, origin="1970-01-01")
+current$sunset = as.POSIXct(current$sunset, origin="1970-01-01")
+colnames(current)[12] = c("Visibility")
+colnames(current)[13] = c("Precipitation")
+current$temp = round(current$temp - 273.15)
+current$temp_min = round(current$temp_min - 273.15)
+current$temp_max = round(current$temp_max - 273.15)
 
-#day <- substr(forecast$date_time,9,10)
-#day
 
-#month <- substr(forecast$date_time,6,7)
-#month
-
-#year <- substr(forecast$date_time,1,4)
-#year
-
-#hour <- substr(forecast$date_time,12,13)
-#hour
-
-#date <- substr(forecast$date_time,1,10)
-#date
-
-forecast <- cbind(forecast,date,year,month,day,hour)
-
-head(forecast)
-
+rm(bin,data,date_time,main,temp,weather,wind,visibility,clouds,cordinates,sunrise_set)
 
 
 # Define UI for application that draws a histogram
@@ -243,8 +192,8 @@ ui <- fluidPage(
                                       label = "Choose your Measure",
                                       choices = sort(unique(Measure))),
                           sliderInput(inputId = "hour",
-                                      label = "Number of forecasts",
-                                      min = 01,max = 40, value = c(20,30))
+                                      label = "Days to forecast (Frequency:every 3hours)",
+                                      min = 01,max = 5, value = c(1,2))
                           # value is always yyyy-mm-dd, even if the display format is different
                           #dateInput("date", "Date:", value = date, format = "yyyy-mm-dd")
                           
@@ -287,7 +236,7 @@ server <- function(input, output) {
       ggplot(as.data.frame(forecast$temp[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]]), aes(x=forecast$date_time[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], y=forecast$temp[forecast$City==input$City1 & forecast$num_forecast<=input$hour[2]& forecast$num_forecast>=input$hour[1]], group=1)) +
             geom_line(color="red")+
             geom_point()+
-            labs(title="Temperature Forecast (every 3 hours) - (in Kelvin)",x="Date & Time", y = "Temperature (in Kelvin)")+
+            labs(title="Temperature Forecast (every 3 hours) - (in °C)",x="Date & Time", y = "Temperature (in °C)")+
             theme(axis.text.x = element_text(angle = 90))+theme(plot.title = element_text(hjust = 0.5))
       
         }
@@ -335,9 +284,11 @@ server <- function(input, output) {
       palette = c('green', 'blue', 'pink','red','grey','black'),
       domain = current$main)
     
+    
+    #europe default view long - 9, lat 45, zoom =4
     output$mymap <- renderLeaflet({
       leaflet(current) %>% 
-        setView(lng = 9, lat =45, zoom = 4)  %>% 
+        setView(lng = 0, lat =40, zoom = 2)  %>% 
         addTiles() %>% 
         addCircles(data = current, lat = ~ lat, lng = ~ lon, weight = 2, radius = ~temp*50, popup = ~as.character(temp), label = ~as.character(paste0(City," Temperature: ", sep = " ", temp)), color = ~pal(temp), fillOpacity = 0.5)
       
@@ -370,10 +321,11 @@ server <- function(input, output) {
       proxy <- leafletProxy("mymap", data = current)
       proxy %>% clearMarkers()
       # if (input$markers) {
-      proxy %>% addAwesomeMarkers(~lon, ~lat, icon=icons,label = ~as.character(paste0(City," Weather: ", sep = " ", main))) %>%
-        addLegend("bottomright", pal = pal2, values = current$main,
-                  title = "Weather",
-                  opacity = 2)
+      proxy %>% addAwesomeMarkers(~lon, ~lat, icon=icons,label = ~as.character(paste("In ",City," today's weather is ",description,".   Click for details")),popup = ~as.character(paste("City Name: ",City,"<br>","Cloudiness: ",main,"<br>","<br>","Temperature: ",temp,"°C","<br>","Temparature Range:",temp_min," to ",temp_max,"°C","<br>","<br>","Wind Speed:",wind,"m/sec","<br>","Pressure: ",pressure," hpa","<br>","Humidity: ",humidity,"%","<br>","Clouds: ",Precipitation,"%","<br>","<br>","Sunrise: ",sunrise,"<br>","Sunset: ",sunset))) 
+      #%>%
+       # addLegend("bottomright", pal = pal2, values = current$main,
+        #          title = "Weather",
+         #         opacity = 2)
       
     })
     
