@@ -216,7 +216,15 @@ hour
 date <- substr(forecast$date_time,1,10)
 date
 
-forecast <- cbind(forecast,date,year,month,day,hour)
+datenum <- paste(forecast$year,forecast$month,forecast$day, sep = "")
+datenum
+max(datenum)
+maxdatenum <- paste(substr(max(datenum),1,4),substr(max(datenum),5,6),substr(max(datenum),7,8),sep="-")
+maxdatenum
+
+mindatenum <- Sys.Date()
+
+forecast <- cbind(forecast,date,year,month,day,hour,datenum)
 
 head(forecast)
 
@@ -238,12 +246,14 @@ ui <- fluidPage(
                                       choices = sort(unique(City))),
                           selectInput(inputId = "measure",
                                       label = "Choose your Measure",
-                                      choices = sort(unique(Measure))),
-                          sliderInput(inputId = "hour",
-                                      label = "Hourly Forecast",
-                                      min = 01,max = 24, value = hour),
+                                      choices = sort(unique(Measure)))
+                          #,
+                          #sliderInput(inputId = "hour",
+                           #           label = "Hourly Forecast",
+                           #           min = 0,max = 23, value = hour,step = 3)
+                          ,
                           # value is always yyyy-mm-dd, even if the display format is different
-                          dateInput("date", "Date:", value = date, format = "yyyy-mm-dd")
+                          dateInput("date", "Date:", max = maxdatenum ,value = date, format = "yyyy-mm-dd")
                           
                         ),
                         # Show a plot of the generated distribution
@@ -264,9 +274,19 @@ ui <- fluidPage(
 )
 
 
+#forecast[forecast$City=="London" & forecast$hour=="03" & forecast$date=="2019-03-26","temp"]
+
+
+
+
+#install.packages("astrochron")
+library(astrochron)
+
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
   
   
   
@@ -276,12 +296,19 @@ server <- function(input, output) {
     City1 =input$City1
     measure = input$measure
     hour = input$hour
-    date = input$date
+    date = as.Date(input$date)
     
+
+    
+  
     
     if(input$measure=="temperature"){
-      plot(forecast$temp[forecast$City==input$City1][forecast$hour==input$hour]
-           [as.Date(forecast$date, format = "%Y-%m-%d")==input$date],main='Temperature',type="l")
+      plot(forecast$temp[forecast$City==City1 & as.Date(forecast$date)==as.Date(date)],
+           main='temperature',type="l",xlab="Hours", ylab="Temperature")
+
+            
+           
+           
     }
     
     #Plotting the time series
@@ -292,28 +319,30 @@ server <- function(input, output) {
     
     else if(input$measure=="humidity"){
       #Plotting the time series
-      plot(forecast$humidity[forecast$City==City1],main='Humidity',type="l")
+      plot(forecast$humidity[forecast$City==City1 & as.Date(forecast$date)==as.Date(date)],
+           main='humidity',type="l",xlab="Hours", ylab="humidity")
     }
     
     else if(input$measure=="pressure"){
       #Plotting the time series
-      plot(forecast$pressure[forecast$City==City1],main='Pressure',type="l")
+      plot(forecast$pressure[forecast$City==City1 & as.Date(forecast$date)==as.Date(date)],
+           main='pressure',type="l",xlab="Hours", ylab="pressure")
     }
     
     else if(input$measure=="speed"){
-      #Plotting the time series
-      plot(forecast$speed[forecast$City==City1],main='Speed',type="l")
+      plot(forecast$speed[forecast$City==City1 & as.Date(forecast$date)==as.Date(date)],
+           main='speed',type="l",xlab="Hours", ylab="speed")
     }
   })
   
   output$mymap <-renderLeaflet({
     
     pal <- colorNumeric(
-      palette = c('black'),
+      palette = c('green', 'orange', 'darkgrey','brown','blue','darkgoldenrod','plum3'),
       domain = current$temp)
     
     pal2 <- colorFactor(
-      palette = c('green', 'blue', 'pink','red','grey','black'),
+      palette = c('green', 'orange', 'darkgrey','brown','blue','darkgoldenrod','plum3'),
       domain = current$main)
     
     output$mymap <- renderLeaflet({
@@ -326,13 +355,13 @@ server <- function(input, output) {
     
     getColor <- function(current) {
       sapply(current$main, function(main) {
-        if(main == "Clear") {"blue"
-        }else if(main =="Drizzle"){"orange"
-        }else if(main=="Clouds"){"pink"
-        }else if(main=="Smoke"){"red"
-        }else if(main =="Rain"){"green"
-        }else if(main =="Dust"){"black"
-        }else if(main =="Mist"){"black"
+        if(main == "Clear") {"green"
+        }else if(main == "Drizzle"){"orange"
+        }else if(main == "Clouds"){"darkgrey"
+        }else if(main == "Smoke"){"brown"
+        }else if(main == "Rain"){"blue"
+        }else if(main == "Dust"){"darkgoldenrod"
+        }else if(main == "Mist"){"plum3"
           
         }else{"black"}
         
@@ -361,6 +390,7 @@ server <- function(input, output) {
   })
   
 }
+
 
 
 
