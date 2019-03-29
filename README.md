@@ -45,8 +45,10 @@ Thunderstorm, Drizzle etc.
 - Weather forecast for cities which include: Sevilla,Bilbao,Vigo,Gijon,Zaragoza,Amsterdam,London,Lisbon,Paris,Barcelona,Madrid,Valencia,Mumbai,Salamanca,Toledo,Getafe,Singapore,Hong Kong,New York,Dubai,Rome,Las Vegas,Milan,Warsaw,Toronto,Miami,Buenos Aires,Rio de Janeiro,Santiago,Quito,Nairobi,Cairo,Istanbul,Berlin,Munich,Moscow,Tokyo,Delhi,Chennai,Shanghai,Melbourne,Sydney,Vienna,Budapest,Brussels,Nice,Marseille.
 
 #### Prerequisite Packages
-
+ggplot2, RCurl, httr, rjson, tibble, tidyverse, shiny, shinythemes, plotly, maps, leaflet, leaflet.extras, dplyr
 
 #### Deployment
 This App is published on https://www.shinyapps.io/ 
 demo link : https://weatherdata.shinyapps.io/WeatherForecast/
+![alt text](https://github.com/jyothikambhampati/Datatyding/blob/master/forecast.PNG)
+![alt text](https://github.com/jyothikambhampati/Datatyding/blob/master/Maps.PNG)
