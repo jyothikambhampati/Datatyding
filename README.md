@@ -18,7 +18,7 @@ Features:
 
 -> Weather forecast for cities which include: Sevilla,Bilbao,Vigo,Gijon,Zaragoza,Amsterdam,London,Lisbon,Paris,Barcelona,Madrid,Valencia,Mumbai,Salamanca,Toledo,Getafe,Singapore,Hong Kong,New York,Dubai,Rome,Las Vegas,Milan,Warsaw,Toronto,Miami,Buenos Aires,Rio de Janeiro,Santiago,Quito,Nairobi,Cairo,Istanbul,Berlin,Munich,Moscow,Tokyo,Delhi,Chennai,Shanghai,Melbourne,Sydney,Vienna,Budapest,Brussels,Nice,Marseille.
 
--> Chart to manage and view 3 hour updates and 5 day weather and on click Hover,it displays accurate timing and selected measure along with its units. 
+-> Chart to manage and view 3 hour updates and 5 day weather and on click hover it displays accurate timings and selected measure along with its units. 
 
 ->Real time weather maps with your personal blizzard & hurricane tracker: Rain, snow, clouds, Fog, sunny, Clear,Thunderstorm, Drizzle etc.
 
