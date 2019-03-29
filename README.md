@@ -27,4 +27,5 @@ Features:
 -Unit setting: Temperature(C), Time format (YYYY/MM/DD HH:MM:SS), Precipitation (mm), wind speed (m/s), pressure (hpa),Humidity(%) 
 
 Github repository :https://github.com/jyothikambhampati/Datatyding
+
 Check out the app @ https://weatherdata.shinyapps.io/WeatherForecast/
