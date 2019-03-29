@@ -127,6 +127,7 @@ forecast$num_forecast[forecast$num_forecast>8 & forecast$num_forecast<=16] = 2
 forecast$num_forecast[forecast$num_forecast>16 & forecast$num_forecast<=24] = 3
 forecast$num_forecast[forecast$num_forecast>24 & forecast$num_forecast<=32] = 4
 forecast$num_forecast[forecast$num_forecast>32 & forecast$num_forecast<=40] = 5
+forecast$num_forecast[forecast$num_forecast>33 & forecast$num_forecast<=50] = 6
 forecast$temp = round(forecast$temp - 273.15)
 forecast$temp_min = round(forecast$temp_min - 273.15)
 forecast$temp_max = round(forecast$temp_max - 273.15)
