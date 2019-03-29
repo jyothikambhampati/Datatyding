@@ -15,7 +15,7 @@ library(leaflet)
 library(leaflet.extras)
 library(dplyr)
 
-#Define UI for application that draws a histogram
+# Define UI for application that draws a histogram
 ui <- fluidPage(
   theme = shinytheme("slate"),
   # Application title
