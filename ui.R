@@ -15,11 +15,6 @@ library(leaflet)
 library(leaflet.extras)
 library(dplyr)
 
-#add city names here
-cities = c("Sevilla","Bilbao","Vigo","Gijon","Zaragoza","Amsterdam","London","Lisbon","Paris","Barcelona","Madrid","Valencia","Mumbai","Salamanca","Toledo","Getafe","Singapore","Hong Kong","New York","Dubai","Rome","Las Vegas","Milan","Warsaw","Toronto","Miami","Buenos Aires","Rio de Janeiro","Santiago","Quito","Nairobi","Cairo","Istanbul","Berlin","Munich","Moscow","Tokyo","Delhi","Chennai","Shanghai","Melbourne","Sydney","Vienna","Budapest","Brussels","Nice","Marseille")
-City = cities
-Measure = c("temperature","speed","pressure","humidity")
-
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   theme = shinytheme("slate"),
