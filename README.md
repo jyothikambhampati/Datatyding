@@ -8,7 +8,7 @@
                       
 Introduction:
 
-An application which gives information about Current weather for some specific cities. The application gives information about five days future forecast, also 3 hours weather forecast. Weather forecast detects weather automatically for cities that the user choose. There are many information in weather forecast which includes Temperature, atmospheric pressure, relative humidity, precipitation, wind speed and direction. In Addition to the forecast information, the user can explore through Maps and check the real-time temperature, rain, snow, humidity, pressure, wind force and wind direction are all in this weather application based. 
+This is an application which gives information about Current weather for some specific cities. The application gives information about five days future forecast, also 3 hours weather forecast. Weather forecast detects weather automatically for cities that the user choose. There are many information in weather forecast which includes Temperature, atmospheric pressure, relative humidity, precipitation, wind speed and direction. In Addition to the forecast information, the user can explore through Maps and check the real-time temperature, rain, snow, humidity, pressure, wind force and wind direction are all in this weather application based. 
 
  Data source: Data is extracted from https://openweathermap.org/ using Current weather API and processed according to the application requirement.
 
