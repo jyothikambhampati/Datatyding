@@ -51,4 +51,5 @@ ggplot2, RCurl, httr, rjson, tibble, tidyverse, shiny, shinythemes, plotly, maps
 This App is published on https://www.shinyapps.io/ 
 demo link : https://weatherdata.shinyapps.io/WeatherForecast/
 ![alt text](https://github.com/jyothikambhampati/Datatyding/blob/master/forecast.PNG)
+
 ![alt text](https://github.com/jyothikambhampati/Datatyding/blob/master/Maps.PNG)
