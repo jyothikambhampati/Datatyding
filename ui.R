@@ -1,5 +1,5 @@
 
-#Weather forecast  Application
+# Weather forecast  Application
 
 library(ggplot2)
 library(RCurl)
